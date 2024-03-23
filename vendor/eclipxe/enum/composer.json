@@ -1,0 +1,70 @@
+{
+    "name": "eclipxe/enum",
+    "description": "Enum based on the Brent Roose enum idea https://stitcher.io/blog/php-enums",
+    "keywords": ["enum", "reflection"],
+    "homepage": "https://github.com/eclipxe13/enum",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Carlos C Soto",
+            "email": "eclipxe13@gmail.com",
+            "homepage": "https://eclipxe.com.mx/"
+        }
+    ],
+    "support": {
+        "source": "https://github.com/eclipxe13/enum",
+        "issues": "https://github.com/eclipxe13/enum/issues"
+    },
+    "require": {
+        "php": ">=7.2"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^8.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "Eclipxe\\Enum\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Eclipxe\\Enum\\Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "dev:install": [
+            "bash develop/install-development-tools"
+        ],
+        "dev:build": ["@dev:fix-style", "@dev:test"],
+        "dev:check-style": [
+            "@php tools/php-cs-fixer fix --dry-run --verbose",
+            "@php tools/phpcs --colors -sp"
+        ],
+        "dev:fix-style": [
+            "@php tools/php-cs-fixer fix --verbose",
+            "@php tools/phpcbf --colors -sp"
+        ],
+        "dev:test": [
+            "@dev:check-style",
+            "@php vendor/bin/phpunit --testdox --verbose --stop-on-failure",
+            "@php tools/phpstan analyse --no-progress",
+            "@php tools/psalm --no-progress",
+            "@dev:infection"
+        ],
+        "dev:coverage": [
+            "@php -dzend_extension=xdebug.so -dxdebug.mode=coverage vendor/bin/phpunit --verbose --coverage-html build/coverage/html/"
+        ],
+        "dev:infection": [
+            "@php tools/infection --initial-tests-php-options='-dzend_extension=xdebug.so -dxdebug.mode=coverage' --show-mutations --no-progress"
+        ]
+    },
+    "scripts-descriptions": {
+        "dev:install": "DEV: install development tools into tools/",
+        "dev:build": "DEV: run dev:fix-style dev:tests and dev:docs, run before pull request",
+        "dev:check-style": "DEV: search for code style errors using php-cs-fixer and phpcs",
+        "dev:fix-style": "DEV: fix code style errors using php-cs-fixer and phpcbf",
+        "dev:test": "DEV: run dev:fix-style, dev:check-style, phpunit, phpstan, psalm and infection",
+        "dev:coverage": "DEV: run phpunit with xdebug and storage coverage in build/coverage/html/",
+        "dev:infection": "DEV: run mutation tests using infection"
+    }
+}
