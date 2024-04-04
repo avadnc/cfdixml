@@ -390,7 +390,7 @@ class ActionsCfdixml
 					}
 
 					// FINKOK
-					$invoice->generateDocument('cfdixml', $langs, false, false);
+					$invoice->generateDocument($object->model_pdf, $langs, false, false);
 					setEventMessage('Factura timbrada con éxito UUID:' . $data['UUID'], 'mesgs');
 
 					// header('Location:' . $_SERVER['PHP_SELF'] . '?facid=' . $object->id);
@@ -454,12 +454,12 @@ class ActionsCfdixml
 			if ($action == 'rebuildpdf') {
 				$invoice = new Facture($this->db);
 				$invoice->fetch($object->id);
-				$expInvoice = explode('cfdi',$object->model_pdf);
-				if(count($expInvoice) > 1){
-					if($expInvoice[1] == 'xml'){
-						$invoice->generateDocument('cfdixml', $langs, false, false);
-					}
-				}
+//				$expInvoice = explode('cfdi',$object->model_pdf);
+//				if(count($expInvoice) > 1){
+//					if($expInvoice[1] == 'xml'){
+						$invoice->generateDocument($object->model_pdf, $langs, false, false);
+//					}
+//				}
 			}
 
 			// Do what you want here...
