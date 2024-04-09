@@ -1071,7 +1071,7 @@ class pdf_cfdixml extends ModelePDFFactures
 
 			$default_font_size = pdf_getPDFFontSize($outputlangs);
 
-			$tab2_top = $this->marges['h'] + 202;
+//			$tab2_top = $this->marges['h'] + 202;
 			$tab2_top = ($posy < 217) ? 217 : $posy;
 			$tab2_hl = 4;
 			$pdf->SetFont('', '', $default_font_size - 1);
