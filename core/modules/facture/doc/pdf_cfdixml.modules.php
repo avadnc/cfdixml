@@ -46,6 +46,7 @@ dol_include_once('/cfdixml/lib/phpqrcode/qrlib.php');
 
 
 
+
 /**
  *  Classe permettant de generer les factures au modele oursin
  */
@@ -207,6 +208,8 @@ class pdf_cfdixml extends ModelePDFFactures
 
 					$pdf->SetMargins($this->marge_gauche, $this->marge_haute, $this->marge_droite);   // Left, Top, Right
 
+					$nblignes = count($object->lines);	// evita PHP Warning: undefined varaible $nblignes
+					
 					// Positionne $this->atleastonediscount si on a au moins une remise
 					for ($i = 0; $i < $nblignes; $i++) {
 						if ($object->lines[$i]->remise_percent) {
@@ -235,7 +238,7 @@ class pdf_cfdixml extends ModelePDFFactures
 					$iniY = $pdf->GetY();
 					$curY = $pdf->GetY();
 					$nexY = $pdf->GetY();
-					$nblignes = count($object->lines);
+//					$nblignes = count($object->lines);
 
 					// Loop on each lines
 					for ($i = 0; $i < $nblignes; $i++) {
@@ -514,6 +517,8 @@ class pdf_cfdixml extends ModelePDFFactures
 					if ($conf->global->MAIN_DISABLE_PDF_COMPRESSION) $pdf->SetCompression(false);
 
 					$pdf->SetMargins($this->marge_gauche, $this->marge_haute, $this->marge_droite);   // Left, Top, Right
+					
+					$nblignes = count($object->lines); 	// previene PHP Warning undefined variable $nblignes
 
 					// Positionne $this->atleastonediscount si on a au moins une remise
 					for ($i = 0; $i < $nblignes; $i++) {
@@ -531,7 +536,7 @@ class pdf_cfdixml extends ModelePDFFactures
 					$pdf->MultiCell(0, 3, '');		// Set interline to 3
 					$pdf->SetTextColor(0, 0, 0);
 
-					$tab_top = $this->marges['h'] + 90;
+					$tab_top = $this->marges['h'] + 85;
 					$tab_top_newpage = $this->marges['h'] +100;
 					$tab_height = 110;
 					$tab_height_newpage = 150;
@@ -542,6 +547,7 @@ class pdf_cfdixml extends ModelePDFFactures
 
 					$iniY = $pdf->GetY();
 					$curY = $pdf->GetY();
+
 
 
 					// $table = ;
@@ -588,7 +594,8 @@ class pdf_cfdixml extends ModelePDFFactures
 					$pdf->SetFont('', '', $default_font_size - 1);
 					$posy1 = $pdf->GetY();
 					$pdf->SetXY($posxcell + 6, $posy1);
-					$pdf->MultiCell(90, 0, "Fecha de pago : " . $payment->array_options['options_cfdixml_fechatimbrado'], 0, 'L');
+//					$pdf->MultiCell(90, 0, "Fecha de pago : " . $payment->array_options['options_cfdixml_fechatimbrado'], 0, 'L');
+					$pdf->MultiCell(90, 0, "Fecha de pago : " . date("Y-m-d H:i:s", $payment->datepaye), 0, 'L');	// Fecha de pago en lugar de fecha de timbrado
 
 					$pdf->SetXY($posxcell + 60, $posy1);
 					$pdf->MultiCell(90, 0, "Forma de pago : " . $payment->type_label, 0, 'L');
@@ -724,11 +731,13 @@ class pdf_cfdixml extends ModelePDFFactures
 
 					// Show square
 					if ($pagenb == 1) {
-						$this->_tableau($pdf, $tab_top, $tab_height, $nexY, $outputlangs);
-						$bottomlasttab = $tab_top + $tab_height + 1;
+//						$this->_tableau($pdf, $tab_top, $tab_height, $nexY, $outputlangs);
+//						$bottomlasttab = $tab_top + $tab_height + 1;
+						$bottomlasttab = $this->_tableau($pdf, $tab_top, $tab_height, $nexY, $outputlangs);
 					} else {
-						$this->_tableau($pdf, $tab_top, $tab_height, $nexY, $outputlangs, 1, 0);
-						$bottomlasttab = $tab_top + $tab_height + 1;
+						// $this->_tableau($pdf, $tab_top, $tab_height, $nexY, $outputlangs, 1, 0);
+						// $bottomlasttab = $tab_top + $tab_height + 1;
+						$bottomlasttab = $this->_tableau($pdf, $tab_top, $tab_height, $nexY, $outputlangs, 1, 0);
 					}
 					
 //					$bottomlasttab = 190;
@@ -873,7 +882,7 @@ class pdf_cfdixml extends ModelePDFFactures
 		$posy = $pdf->Gety();
 		$pdf->SetFont('', '', $default_font_size - 3);
 		$pdf->SetXY(5, $posy );
-		$pdf->MultiCell(150, 4, $object->array_options['options_cfdixml_sellocfd'], 0, 'L');
+		$pdf->MultiCell(157, 4, $object->array_options['options_cfdixml_sellocfd'], 0, 'L');
 
 		//Sello Digital SAT
 		$posy = $pdf->Gety();
@@ -884,7 +893,7 @@ class pdf_cfdixml extends ModelePDFFactures
 		$posy = $pdf->Gety();
 		$pdf->SetFont('', '', $default_font_size - 3);
 		$pdf->SetXY(5, $posy);
-		$pdf->MultiCell(150, 4, $object->array_options['options_cfdixml_sellosat'], 0, 'L');
+		$pdf->MultiCell(157, 4, $object->array_options['options_cfdixml_sellosat'], 0, 'L');
 
 		//Sello Digital SAT
 		$posy = $pdf->Gety();
@@ -895,10 +904,8 @@ class pdf_cfdixml extends ModelePDFFactures
 		$posy = $pdf->Gety();
 		$pdf->SetFont('', '', $default_font_size - 3);
 		$pdf->SetXY(5, $posy);
-		$pdf->MultiCell(150, 4, $object->array_options['options_cfdixml_cadenaorig'], 0, 'L');
+		$pdf->MultiCell(157, 4, $object->array_options['options_cfdixml_cadenaorig'], 0, 'L');
 		$posy = $pdf->Gety();
-
-
 
 		return $posy;
 	}
@@ -1064,7 +1071,8 @@ class pdf_cfdixml extends ModelePDFFactures
 
 			$default_font_size = pdf_getPDFFontSize($outputlangs);
 
-			$tab2_top = $this->marges['h'] + 202;
+//			$tab2_top = $this->marges['h'] + 202;
+			$tab2_top = ($posy < 217) ? 217 : $posy;
 			$tab2_hl = 4;
 			$pdf->SetFont('', '', $default_font_size - 1);
 
@@ -1079,7 +1087,9 @@ class pdf_cfdixml extends ModelePDFFactures
 			$index = 0;
 
 			//QR CODE
-
+			$emisor = getEmisor();
+			$receptor = new Societe($this->db);
+			$receptor->fetch($object->socid);
 			$data_cbb = 'https://verificacfdi.facturaelectronica.sat.gob.mx/default.aspx?id=' . $object->array_options["options_cfdixml_UUID"] . '&re=' . $emisor["Rfc"] . '&rr=' . $receptor->idprof1 . '&tt=' . $object->total_ttc . '&fe=' . substr($object->array_options["options_cfdixml_sellocfd"], -8);
 			$filename = dol_sanitizeFileName($payment->ref);
 			$filedir = $conf->cfdixml->multidir_output[$conf->entity] . '/payment/' . dol_sanitizeFileName($payment->ref);
@@ -1088,9 +1098,9 @@ class pdf_cfdixml extends ModelePDFFactures
 			$x = $pdf->getX() + 5;
 			// $x = 15;
 
-			$w = 30;
-			$h = 30;
-			$pdf->Image($filedir . "/" . $object->ref . '_' . $object->array_options["options_cfdixml_UUID"] . ".png", $col2x - 20, $tab2_top + $tab2_hl * $index + 6, 50, 50, 'PNG', '');
+			$w = 50;
+			$h = 50;
+			$pdf->Image($filedir . "/" . $object->ref . '_' . $object->array_options["options_cfdixml_UUID"] . ".png", $col2x - 20, $tab2_top + $tab2_hl * $index + 6, $w, $h, 'PNG', '');
 			$posy = $pdf->getY();
 			$posy = $this->_tableau_info($pdf, $object, $posy, $outputlangs);
 //JGG			
@@ -1213,9 +1223,8 @@ class pdf_cfdixml extends ModelePDFFactures
 			}
 			$pdf->SetXY($this->marges['g'] + 170, $tab_top + 1);
 			$pdf->MultiCell(20, 4, $outputlangs->transnoentities("TotalHTShort"), 0, 'R');
-
-			return $pdf->GetY();
 		}
+		return $pdf->GetY();
 	}
 
 	/**
@@ -1298,18 +1307,22 @@ class pdf_cfdixml extends ModelePDFFactures
 			//Datos fiscales
 			$emisor = getEmisor();
 
-			$pdf->SetXY($posx + 2, $posy + 8);
-			$pdf->SetFont('', 'B', $default_font_size);
-			$pdf->MultiCell(80, 4, "RFC: " . $emisor['Rfc'], 0, 'L');
+//			$pdf->SetXY($posx + 2, $posy + 8);
+//			$pdf->SetFont('', 'B', $default_font_size);
+//			$pdf->MultiCell(80, 4, "RFC: " . $emisor['Rfc'], 0, 'L');
 			// var_dump($emisor);
 			//Regimen Fiscal
-			$pdf->SetXY($posx + 2, $posy + 12);
+			$posy = $pdf->GetY();
+			$pdf->SetXY($posx + 2, $posy);
 			$pdf->SetFont('', 'B', $default_font_size);
-			$pdf->MultiCell(80, 4, "R. Fiscal: " . $emisor['RegimenFiscal'], 0, 'L');
+//			$pdf->MultiCell(80, 4, "R. Fiscal: " . $emisor['RegimenFiscal'], 0, 'L');
+			$RegimenFiscal = getValueCfdixml($conf->global->MAIN_INFO_SOCIETE_FORME_JURIDIQUE, 'c_forme_juridique'); //getRegimenFiscal($conf->global->MAIN_INFO_SOCIETE_FORME_JURIDIQUE);
+			$pdf->MultiCell(80, 4, "R. Fiscal: " . $RegimenFiscal, 0, 'L');
 
 
 			// Show sender information
-			$pdf->SetXY($posx + 2, $posy + 16);
+			$posy = $pdf->GetY();
+			$pdf->SetXY($posx + 2, $posy);
 			$pdf->SetFont('', '', $default_font_size - 1);
 			$pdf->MultiCell(80, 4, $carac_emetteur, 0, 'L');
 
@@ -1349,8 +1362,8 @@ class pdf_cfdixml extends ModelePDFFactures
 			$pdf->SetFont('', '', $default_font_size - 2);
 			$pdf->SetXY($posx + 2, $posy - 5);
 			$pdf->MultiCell(80, 5, "Receptor :", 0, 'L');
-			$pdf->Rect($posx, $posy, 100, $hautcadre);
-
+			
+			$marcoini = $pdf->GetY();
 			// Show recipient name
 			$pdf->SetXY($posx + 2, $posy + 3);
 			$pdf->SetFont('', 'B', $default_font_size);
@@ -1527,6 +1540,8 @@ class pdf_cfdixml extends ModelePDFFactures
 			$pdf->SetFont('', '', $default_font_size -1);
 			$pdf->MultiCell(96, 4, 'Uso CFDI: CP01', 0, 'L');
 		}
+		$marcofin = $pdf->GetY();
+		$pdf->Rect($posx, $marcoini, 100, $marcofin - $marcoini);
 	}
 
 	/**
