@@ -238,7 +238,7 @@ class pdf_cfdixml extends ModelePDFFactures
 					$iniY = $pdf->GetY();
 					$curY = $pdf->GetY();
 					$nexY = $pdf->GetY();
-					$nblignes = count($object->lines);
+//					$nblignes = count($object->lines);
 
 					// Loop on each lines
 					for ($i = 0; $i < $nblignes; $i++) {
